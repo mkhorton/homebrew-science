@@ -4,6 +4,7 @@ class Critic2 < Formula
   url "https://github.com/aoterodelaroza/critic2/archive/stable.tar.gz"
   version "2.0-stable"
   sha256 "5c0803d47fbbb061b9f0b44e56eeebd7aa3298b275b9253fecdae7847a1ff903"
+  head "https://github.com/aoterodelaroza/critic2.git"
   # tag "chemistry"
   # doi "10.1016/j.cpc.2013.10.026"
   # doi "10.1016/j.cpc.2008.07.018"
