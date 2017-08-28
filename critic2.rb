@@ -2,8 +2,11 @@ class Critic2 < Formula
   desc "Analysis of quantum chemical interactions in molecules and solids."
   homepage "https://github.com/aoterodelaroza/critic2"
   url "https://github.com/aoterodelaroza/critic2/archive/stable.tar.gz"
-  version "stable"
+  version "2.0-stable"
   sha256 "5c0803d47fbbb061b9f0b44e56eeebd7aa3298b275b9253fecdae7847a1ff903"
+  # tag "chemistry"
+  # doi "10.1016/j.cpc.2013.10.026"
+  # doi "10.1016/j.cpc.2008.07.018"
 
   option "with-libxc", "Compile with libxc support to calculate exchange and correlation densities"
 
@@ -15,23 +18,19 @@ class Critic2 < Formula
   def install
     system "autoreconf", "-i"
 
+    args = ["--disable-debug",
+            "--disable-dependency-tracking",
+            "--disable-silent-rules",
+            "--prefix=#{prefix}"]
+
     if build.with? "libxc"
-      system "./configure", "--with-libxc-prefix=#{HOMEBREW_PREFIX}/lib",
-                            "--with-libxc-include=#{HOMEBREW_PREFIX}/include",
-                            "--disable-debug",
-                            "--disable-dependency-tracking",
-                            "--disable-silent-rules",
-                            "--prefix=#{prefix}"
+      args << "--with-libxc-prefix=#{Formula["libxc"].opt_lib}"
+      args << "--with-libxc-include=#{Formula["libxc"].opt_include}"
     end
 
-    if build.without? "libxc"
-      system "./configure", "--disable-debug",
-                            "--disable-dependency-tracking",
-                            "--disable-silent-rules",
-                            "--prefix=#{prefix}"
-    end
+    system "./configure", *args
 
-    system "make"
+    ENV.deparallelize { system "make" }
     system "make", "install"
   end
 
