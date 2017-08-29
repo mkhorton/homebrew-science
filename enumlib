@@ -15,13 +15,6 @@ class Enumlib < Formula
     sha256 "2dbde11031cd27c20566275fc1fca112e989e7150fa9afa5560acf483761613f"
   end
 
-  resource "polya" do
-    # this specific version of the polya submodule is associated with
-    # the enumlib v1.0.8 release
-    url "https://github.com/rosenbrockc/polya/archive/6ab2d1231829f08509c6b07679666ed7ba153c56.tar.gz"
-    sha256 "20f798afddfb05ca0ad6346f37cd03960a3336fac28190abb883768ef4066e99"
-  end
-
   def install
     ENV.deparallelize
 
@@ -29,15 +22,9 @@ class Enumlib < Formula
       cp_r ".", "#{buildpath}/symlib"
     end
 
-    resource("polya").stage do
-      cp_r ".", "#{buildpath}/polya"
-    end
-
+    # F90 can be either gfortran or ifort
+    # could try to pick this up intelligently from $FC in future
     cd "symlib/src" do
-      system "make", "F90=gfortran"
-    end
-
-    cd "polya/fortran" do
       system "make", "F90=gfortran"
     end
 
