@@ -10,9 +10,19 @@ class Bader < Formula
   # doi "10.1063/1.3553716"
 
   depends_on "gcc" => :build
+  depends_on :fortran => :build
 
   def install
-    ENV.deparallelize { system "make", "-f", "makefile.osx_gfortran" }
+    ENV.deparallelize
+
+    fc = File.basename ENV.fc
+
+    if fc == "gfortran"
+      system "make", "-f", "makefile.osx_gfortran"
+    elsif fc == "ifort"
+      system "make", "-f", "makefile.osx_ifort"
+    end
+
     bin.install "bader"
   end
 
