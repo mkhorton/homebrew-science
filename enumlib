@@ -18,20 +18,21 @@ class Enumlib < Formula
   def install
     ENV.deparallelize
 
+    # F90 can be either gfortran or ifort
+    f90 = File.basename ENV.fc
+
     resource("symlib").stage do
       cp_r ".", "#{buildpath}/symlib"
     end
 
-    # F90 can be either gfortran or ifort
-    # could try to pick this up intelligently from $FC in future
     cd "symlib/src" do
-      system "make", "F90=gfortran"
+      system "make", "F90=#{f90}"
     end
 
     cd "src" do
-      system "make", "F90=gfortran"
-      system "make", "F90=gfortran", "enum.x"
-      system "make", "F90=gfortran", "makestr.x"
+      system "make", "F90=#{f90}"
+      system "make", "F90=#{f90}", "enum.x"
+      system "make", "F90=#{f90}", "makestr.x"
       bin.install "enum.x"
       bin.install "makestr.x"
     end
