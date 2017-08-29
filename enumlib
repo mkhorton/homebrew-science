@@ -17,26 +17,21 @@ class Enumlib < Formula
 
   resource "polya" do
     # this specific version of the polya submodule is associated with
-    # the enumlib v1.0.8 release, it used to be included with the enumlib
-    # release directly, but now has its own repository
+    # the enumlib v1.0.8 release
     url "https://github.com/rosenbrockc/polya/archive/6ab2d1231829f08509c6b07679666ed7ba153c56.tar.gz"
     sha256 "20f798afddfb05ca0ad6346f37cd03960a3336fac28190abb883768ef4066e99"
   end
-
 
   def install
     ENV.deparallelize
 
     resource("symlib").stage do
-      system "cp", "-r", ".", "#{buildpath}/symlib"
+      cp_r ".", "#{buildpath}/symlib"
     end
 
     resource("polya").stage do
-      system "cp", "-r", ".", "#{buildpath}/polya"
+      cp_r ".", "#{buildpath}/polya"
     end
-    
-    # make takes either F90=gfortran or
-    # F90=ifort
 
     cd "symlib/src" do
       system "make", "F90=gfortran"
@@ -53,19 +48,25 @@ class Enumlib < Formula
       bin.install "enum.x"
       bin.install "makestr.x"
     end
-
   end
 
   test do
-    # `test do` will create, run in and delete a temporary directory.
-    #
-    # This test will fail and we won't accept that! For Homebrew/homebrew-core
-    # this will need to be a test that verifies the functionality of the
-    # software. Run the test with `brew test enumlib`. Options passed
-    # to `brew install` such as `--HEAD` also need to be provided to `brew test`.
-    #
-    # The installed folder is not in the path, so use the entire path to any
-    # executables being tested: `system "#{bin}/program", "do", "something"`.
-    system "false"
+    # using sample input provided by enumlib
+    input = "fcc
+bulk
+0.50000000     0.50000000      0.0000000        # a1 parent lattice vector
+0.50000000      0.0000000     0.50000000        # a2 parent lattice vector
+ 0.0000000     0.50000000     0.50000000        # a3 parent lattice vector
+ 2 -nary case
+    1 # Number of points in the multilattice
+ 0.0000000      0.0000000      0.0000000    0/1   # d01 d-vector
+    8 8   # Starting and ending cell sizes for search
+0.10000000E-06 # Epsilon (finite precision parameter)
+part list of labelings
+1 2 2
+1 2 2
+"
+    File.write("struct_enum.in", input)
+    system "#{bin}/enum.x"
   end
 end
